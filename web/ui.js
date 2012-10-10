@@ -1,5 +1,14 @@
 function error(msg) {
-  alert(msg);
+  $('#renderArea').hide();
+  $('#GCodeErrorDiv').html(msg);
+  $('#GCodeErrorDiv').show();
+}
+
+function GCodeStatus(msg)
+{
+  $('#renderArea').hide();
+  $('#GCodeStatusDiv').html(msg);
+  $('#GCodeStatusDiv').show();
 }
 
 function loadFile(path, callback /* function(contents) */) {
@@ -26,8 +35,12 @@ function openGCodeFromPath(path) {
   loadFile(path, function(gcode) {
     object = createObjectFromGCode(gcode);
     scene.add(object);
+    
     localStorage.setItem('last-loaded', path);
     localStorage.removeItem('last-imported');
+    
+    $('#GCodeStatusDiv').hide();
+    $('#renderArea').show();
   });
 }
 
@@ -43,7 +56,7 @@ function openGCodeFromText(gcode) {
 }
 
 
-$(function() {
+function initializeGCodeViewer(url) {
 
   if (!Modernizr.webgl) {
     alert('Sorry, you need a WebGL capable browser to use this.\n\nGet the latest Chrome or FireFox.');
@@ -55,11 +68,15 @@ $(function() {
     return;
   }
 
+  GCodeStatus("Loading GCode...");
+
   // Show 'About' dialog for first time visits.
+  /*
   if (!localStorage.getItem("not-first-visit")) {
     localStorage.setItem("not-first-visit", true);
     setTimeout(about, 500);
   }
+  */
 
   // Drop files from desktop onto main page to import them.
   $('body').on('dragover', function(event) {
@@ -80,12 +97,17 @@ $(function() {
   });
 
   scene = createScene($('#renderArea'));
+  
+  /*
   var lastImported = localStorage.getItem('last-imported');
   var lastLoaded = localStorage.getItem('last-loaded');
   if (lastImported) {
     openGCodeFromText(lastImported);
   } else {
-    openGCodeFromPath(lastLoaded || 'examples/octocat.gcode');
+    openGCodeFromPath(lastLoaded || 'examples/hand_ok.gcode');
   }
-});
+  */
+  
+  openGCodeFromPath(url);
+}
 
